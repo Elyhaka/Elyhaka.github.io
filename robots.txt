@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://elyhaka.github.io/sitemap.xml

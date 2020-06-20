@@ -3,4 +3,21 @@
     <url>
         <loc>https://elyhaka.github.io/</loc>
     </url>
+    <url>
+        <loc>https://elyhaka.github.io/full-shiba/</loc>
+    </url>
+    <url>
+        <loc>https://elyhaka.github.io/legal-credits/</loc>
+    </url>
+    <url>
+        <loc>https://elyhaka.github.io/posts/</loc>
+    </url>
+    <url>
+        <loc>https://elyhaka.github.io/posts/dynamic-config-for-undecided-ones/</loc>
+        <lastmod>2020-06-20</lastmod>
+    </url>
+    <url>
+        <loc>https://elyhaka.github.io/posts/making-microservices-devenv-with-nix/</loc>
+        <lastmod>2020-06-19</lastmod>
+    </url>
 </urlset>

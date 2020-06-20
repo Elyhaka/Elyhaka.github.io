@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dynamic configuration files for the undecided ones - Elyhaka's Website</title>
+  <meta charset="utf-8">
+<link rel="stylesheet" href="/style.css" />
+<script src="/scripts/doge.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" type="image/png" href="/images/favicon.png">
+
+</head>
+<body class="page">
+  <nav class="side">
+  <div class="logo">
+    <a href="/full-shiba"><img src="/images/self.jpg" /></a>
+    <h1>Elyhaka's<br>Website</h1>
+  </div>
+
+  <h2>
+    Stories of a DevOps shiba stuck
+    with a dialup modem in the 90's&#8230;
+  </h2>
+</nav>
+
+
+  <main>
+    <div class="wrapper">
+      <nav class="top">
+  <span class="bold italic red bright">menu</span>
+  <span class="gray">= [</span>
+  <ul class="nav">
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/posts">Posts</a>
+    </li>
+    <li>
+      <a href="/legal-credits">Credits & Legal</a>
+    </li>
+    <span class="gray">];</span>
+  </ul>
+</nav>
+
+      <section class="page-content">
+        
+          <span class="italic">Posted the <span class="red bright">2020-06-20</span></span>
+          <h1>Dynamic configuration files for the undecided ones</h1>
+        
+
+        <p>I'm the kind of person that gets bored of its current theme quite quickly. I'm changing it very <em>very</em> <strong><em>very</em></strong> often. But I keep the same layout and workflow almost every time, and I mostly just change colors, fonts and wallpapers.</p>
+<p>Back when I was using ArchLinux as my main system, I had this little Ruby script I created that was populating my home directory with configuration files (for i3, urxvt etc...). I was using <a href="https://ruby-doc.org/stdlib-2.7.1/libdoc/erb/rdoc/ERB.html">ERB</a> back then to make dynamic the parts that were theme related. It worked well and I used it for years.</p>
+<p>When I switched to NixOS, I naturally started to use my script, but it quickly seemed it was completely overlapping with what I could do with <a href="https://github.com/rycee/home-manager">home-manager</a>.</p>
+<h2 id="managing-my-desktop-theme-with-nix">Managing my desktop theme with Nix</h2>
+<p>Yup, as stupid as it sounds, that's what I ended up doing. And I think its the most powerful way to handle it!</p>
+<p>That's quite simple using home manager's <code>home.file</code> entries. I first created a <code>theme.nix</code> file:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">pkgs </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+
+{
+  </span><span style="color:#8ec07c;">font </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;JetBrains Mono&quot;</span><span style="color:#fdf4c1aa;">;
+    </span><span style="color:#8ec07c;">size </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;12&quot;</span><span style="color:#fdf4c1aa;">;
+  };
+
+  </span><span style="color:#8ec07c;">gtk </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#8ec07c;">theme </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">package </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">pop-gtk-theme</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Pop-dark&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+
+    </span><span style="color:#8ec07c;">iconTheme </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">package </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">papirus-icon-theme</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;Papirus-Dark&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+  };
+
+  </span><span style="color:#8ec07c;">colors </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#8ec07c;">bg </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">hard </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#282625&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">normal </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#32302f&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">soft </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#5c5857&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">rgba </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">a</span><span style="color:#fdf4c1aa;">: </span><span style="color:#b8bb26;">&quot;rgba(30, 30, 30, </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">a</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">)&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+
+    </span><span style="color:#8ec07c;">fg </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#dfbf8e&quot;</span><span style="color:#fdf4c1aa;">;
+
+    </span><span style="color:#8ec07c;">red </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#ea6962&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#ee8781&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+    </span><span style="color:#8ec07c;">green </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#a9b665&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#bac483&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+    </span><span style="color:#8ec07c;">yellow </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#e78a4e&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#eba171&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+    </span><span style="color:#8ec07c;">blue </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#7daea3&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#97beb5&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+    </span><span style="color:#8ec07c;">purple </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#d3869b&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#db9eaf&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+    </span><span style="color:#8ec07c;">cyan </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#89b482&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#a0c39a&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+    </span><span style="color:#8ec07c;">orange </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#dfbf8e&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#e5cba4&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+    </span><span style="color:#8ec07c;">gray </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#8ec07c;">dark </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#857a6a&quot;</span><span style="color:#fdf4c1aa;">;
+      </span><span style="color:#8ec07c;">bright </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;#9e9486&quot;</span><span style="color:#fdf4c1aa;">;
+    };
+  };
+}
+</span></code></pre>
+<p>Then, I used it to customize the output of configuration files. For instance, this is how I used it to customize <code>alacritty</code>:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">theme </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+
+</span><span style="color:#fa5c4b;">let
+  </span><span style="color:#8ec07c;">h </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">a</span><span style="color:#fdf4c1aa;">: </span><span style="color:#d3869b;">builtins</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">replaceStrings </span><span style="color:#fdf4c1aa;">[ </span><span style="color:#b8bb26;">&quot;#&quot; </span><span style="color:#fdf4c1aa;">] [ </span><span style="color:#b8bb26;">&quot;0x&quot; </span><span style="color:#fdf4c1aa;">] </span><span style="color:#fdf4c1;">a</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fa5c4b;">in </span><span style="color:#b8bb26;">&#39;&#39;
+  env:
+    TERM: xterm-256color
+  font:
+    normal:
+      family: &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">font</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">name</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+    size: 14
+  cursor:
+    style: Beam
+  mouse:
+    url:
+      launcher:
+        program: firefox-devedition
+  background_opacity: 0.92
+  colors:
+    primary:
+      background: &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bg</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">hard</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      foreground: &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">fg</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+    normal:
+      black:   &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bg</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">hard</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      red:     &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">red</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">dark</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      green:   &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">green</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">dark</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      yellow:  &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">yellow</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">dark</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      blue:    &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">blue</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">dark</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      magenta: &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">purple</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">dark</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      cyan:    &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">cyan</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">dark</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      white:   &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">gray</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">dark</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+    bright:
+      black:   &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">gray</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      red:     &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">red</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      green:   &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">green</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      yellow:  &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">yellow</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      blue:    &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">blue</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      magenta: &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">purple</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      cyan:    &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">cyan</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+      white:   &#39;</span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">h theme</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">colors</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">gray</span><span style="color:#fe8019;">.</span><span style="color:#fdf4c1;">bright</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">&#39;
+&#39;&#39;
+</span></code></pre>
+<p>Then, in my <code>home.nix</code> I simply use the output of the previous file (a string) as the <code>text</code> of alacritty's configuration file.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">config</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">pkgs</span><span style="color:#fe8019;">, ... </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+
+</span><span style="color:#fa5c4b;">let
+  </span><span style="color:#8ec07c;">theme </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">./theme.nix </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fa5c4b;">inherit </span><span style="color:#8ec07c;">pkgs</span><span style="color:#fdf4c1aa;">;
+  };
+</span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#8ec07c;">home</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">file </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#b8bb26;">&quot;.config/alacritty/alacritty.yml&quot;</span><span style="color:#fdf4c1aa;">.</span><span style="color:#8ec07c;">text </span><span style="color:#fe8019;">= </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">./alacritty.nix </span><span style="color:#fdf4c1aa;">{
+      </span><span style="color:#fa5c4b;">inherit </span><span style="color:#8ec07c;">theme</span><span style="color:#fdf4c1aa;">;
+    };
+  };
+}
+</span></code></pre>
+<p>I repeated this with all the programs I use, and I'm now a <code>home-manager switch</code> away of having my new theme perfectly applied on my whole desktop.</p>
+<p>That's what I love with NixOS, I can leverage the same language to manage every little part of my operating system, even the unexpected ones.</p>
+
+      </section>
+    </div>
+  </main>
+</body>
+</html>

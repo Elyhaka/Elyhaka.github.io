@@ -1,43 +1,88 @@
-<html>
-    <head>
-        <title>Zola</title>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Welcome to Zola!</h1>
-            <p>
-                You're seeing this page because we couldn't find a template to render.
-            </p>
-            <p>
-                To modify this page, create a <b>index.html</b> file in the templates directory or
-                <a href="https://www.getzola.org/documentation/themes/installing-and-using-themes/" target="_blank">install a theme</a>.
-                <br>
-                You can find what variables are available in this template in the <a href="https:&#x2F;&#x2F;www.getzola.org&#x2F;documentation&#x2F;templates&#x2F;pages-sections&#x2F;#section-variables" target="_blank">documentation</a>.
-            </p>
-        </div>
-        <footer>
-            <a href="https://www.getzola.org/documentation/getting-started/cli-usage/" target="_blank">Get started with Zola</a>
-        </footer>
-        <style>
-            html {
-                line-height: 1.5;
-            }
-            h1 {
-                margin-bottom: 2rem;
-            }
-            .container {
-                font-family: "sans-serif";
-                text-align: center;
-                margin-top: 20vh;
-                padding: 2rem;
-                background: #e9e9e9;
-            }
-            footer {
-                position: fixed;
-                width: 100%;
-                bottom: 1rem;
-                text-align: center;
-            }
-        </style>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Elyhaka's Website</title>
+  <meta charset="utf-8">
+<link rel="stylesheet" href="/style.css" />
+<script src="/scripts/doge.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" type="image/png" href="/images/favicon.png">
+
+</head>
+<body class="index">
+  <nav class="side">
+  <div class="logo">
+    <a href="/full-shiba"><img src="/images/self.jpg" /></a>
+    <h1>Elyhaka's<br>Website</h1>
+  </div>
+
+  <h2>
+    Stories of a DevOps shiba stuck
+    with a dialup modem in the 90's&#8230;
+  </h2>
+</nav>
+
+  <main>
+    <div class="wrapper">
+      <nav class="top">
+  <span class="bold italic red bright">menu</span>
+  <span class="gray">= [</span>
+  <ul class="nav">
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/posts">Posts</a>
+    </li>
+    <li>
+      <a href="/legal-credits">Credits & Legal</a>
+    </li>
+    <span class="gray">];</span>
+  </ul>
+</nav>
+
+
+      <h1>Hello, world!</h1>
+      <p>
+        I'm Elyhaka, (but call me Ely). I'm a DevOps doing DevOps things.
+      </p>
+      <p>
+        I've been doing experiments on my side for a long time, but recently I stumbled across some open-source projects I wanted
+        to get involved in. From one thing to another, I created a GitHub account, and now I'm starting a personal blog to share
+        some thoughts on the various things I try (and mostly fail ¯\_(ツ)_/¯).
+      </p>
+      <p>
+        Building tools for other people is kind of what I love to do. By chance, this is what I mostly do at work, and it is
+        probably what I will talk about most of the time.
+      </p>
+
+      <h2>Things I might post about:</h2>
+      <ul>
+        <li>Golang, .NET Core (C#/F#), Rust (still learning), Ruby.</li>
+        <li>Linux generally and Nix/NixOS specifically.</li>
+        <li>Desktop/Workflow (tiling windows manager and stuff).</li>
+        <li>Custom mechanical keyboards, Synthwave music, and other useless stuff I love to loose time with.</li>
+        <li>Shiba Inus (mine mostly, but not only).</li>
+      </ul>
+
+      <h2>Projects I'm working on:</h2>
+      <ul>
+        <li>
+          <span class="extrabold underlined">Shadow-Nix</span>: Providing a proper integration of <a href="https://shadow.tech">Shadow</a> for NixOS. Links:
+          <a href="https://github.com/Elyhaka/shadow-nix">GitHub</a>
+        </li>
+        <li>
+          <span class="extrabold underlined">NixOS for WSL2</span>: Trying to create a complete NixOS distribution for WSL2. Links:
+          <a href="https://github.com/Elyhaka/NixOS-WSL">GitHub (Image builder)</a>
+          <a href="https://github.com/Elyhaka/NixOS-WSL-DistroLauncher">GitHub (Launcher)</a>
+        </li>
+        <li>
+          <span class="extrabold underlined">Swaynimated</span>: Drawing animated wallpapers for wlroots using the GPU and Rust. Links:
+          <a href="https://github.com/Elyhaka/Swaynimated">GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </main>
+</body>
 </html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Making a micro-service development environnement using Nix - Elyhaka's Website</title>
+  <meta charset="utf-8">
+<link rel="stylesheet" href="/style.css" />
+<script src="/scripts/doge.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" type="image/png" href="/images/favicon.png">
+
+</head>
+<body class="page">
+  <nav class="side">
+  <div class="logo">
+    <a href="/full-shiba"><img src="/images/self.jpg" /></a>
+    <h1>Elyhaka's<br>Website</h1>
+  </div>
+
+  <h2>
+    Stories of a DevOps shiba stuck
+    with a dialup modem in the 90's&#8230;
+  </h2>
+</nav>
+
+
+  <main>
+    <div class="wrapper">
+      <nav class="top">
+  <span class="bold italic red bright">menu</span>
+  <span class="gray">= [</span>
+  <ul class="nav">
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/posts">Posts</a>
+    </li>
+    <li>
+      <a href="/legal-credits">Credits & Legal</a>
+    </li>
+    <span class="gray">];</span>
+  </ul>
+</nav>
+
+      <section class="page-content">
+        
+          <span class="italic">Posted the <span class="red bright">2020-06-19</span></span>
+          <h1>Making a micro-service development environnement using Nix</h1>
+        
+
+        <p>Nix is great when it comes to providing repeatable development environment, but when compared to the tooling provided around <code>docker</code> it falls short. For instance, there is no equivalent for <code>docker-compose</code> that gives the flexibility to handle the lifecycle of multiple  components easily, and that's a must-have when working on micro-services projects.</p>
+<h2 id="what-we-want">What we want</h2>
+<p>Most projects with multiple services I've worked on have a <code>docker-compose.yml</code> and a bunch of shell scripts that handle the lifecycle of the application. That's convenient when working on it: everything you need is always one <code>docker-compose</code> command away. When working with Nix environnement, I generally miss the comfort I'm used to have:</p>
+<ul>
+<li>Starting all components with a single command.</li>
+<li>Handle the lifecycle of all components easily.</li>
+<li>Giving the possibility to follow logs for one service.</li>
+<li>Providing a simple way to execute scripts that help the developer (like executing pending database migrations locally, purging caches, etc...).</li>
+</ul>
+<p>It turns out it is completely feasible to use Nix to provide such tooling around a project. Here's how.</p>
+<h3 id="assumptions-made-throughout-this-post">Assumptions made throughout this post</h3>
+<p>I assume you're familiar enough with Nix. Also, for the sake of this example, I will assume the following simple project:</p>
+<ul>
+<li>The development environnement scripts are store in the <code>/mnt/code/devenv</code> folder.</li>
+<li>The Backend is made in Ruby, cloned in the <code>/mnt/code/backend</code> folder.</li>
+<li>The Frontend is made with whatever-js-framework managed by <code>yarn</code>, cloned in the <code>/mnt/code/frontend</code> folder.</li>
+</ul>
+<p><strong>Disclaimer</strong>: This is not really a micro-service setup, but adding more elements on this stack would not change the process, thus I'm limiting it to a traditional backend-frontend architecture.</p>
+<h2 id="the-nix-shell-tool">The nix-shell tool</h2>
+<p>Nix comes with <a href="https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html">nix-shell</a>, a tool that spawns a shell with a specific environment. You can declare it in a <code>shell.nix</code> file. For instance, when working on this website, I use the following <code>shell.nix</code> file:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">with </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&lt;nixpkgs&gt; </span><span style="color:#fdf4c1aa;">{};
+</span><span style="color:#fdf4c1;">mkShell </span><span style="color:#fdf4c1aa;">{ </span><span style="color:#8ec07c;">buildInputs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[ </span><span style="color:#fdf4c1;">zola </span><span style="color:#fdf4c1aa;">]; }
+</span></code></pre>
+<p>Then I simply run <code>nix-shell --run 'zola serve'</code> in the folder to get the Zola server up and running. I can also run <code>nix-shell</code> without any arguments to get a bash shell in the context of the declared <code>mkShell</code>.</p>
+<p>Let's start with our development environnement with a basic <code>shell.nix</code> file:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">with </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&lt;nixpkgs&gt; </span><span style="color:#fdf4c1aa;">{};
+
+</span><span style="color:#fa5c4b;">let
+  </span><span style="color:#8ec07c;">backendFolder </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;/mnt/code/backend&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">frontendFolder </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;/mnt/code/frontend&quot;</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">mkShell </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;shiba-dev-env&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">buildInputs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[];
+}
+</span></code></pre>
+<p>Right now our shell is pretty useless, but we will start to add elements soon.</p>
+<h2 id="nixify-projects">Nixify projects</h2>
+<p>On the backend and the frontend, we will need some Nix file to provide the environnement we will use to run them.</p>
+<p>On the backend folder, we would create a <code>default.nix</code> with the following content:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">bundlerEnv</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">ruby_2_7 </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+
+</span><span style="color:#fdf4c1;">bundlerEnv </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;ruby-env&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">ruby </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">ruby_2_7</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">gemdir </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">./.</span><span style="color:#fdf4c1aa;">;
+}
+</span></code></pre>
+<p>(You can find more information a developing/packaging Ruby applications for nix <a href="https://github.com/NixOS/nixpkgs/blob/master/doc/languages-frameworks/ruby.section.md">here</a>).</p>
+<p>For the frontend, we would also create a <code>default.nix</code> file:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">symlinkJoin</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">yarn</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">nodejs-13_x </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+
+</span><span style="color:#fdf4c1;">symlinkJoin </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;yarn-webapp&quot;</span><span style="color:#fdf4c1aa;">;
+
+  </span><span style="color:#8ec07c;">paths </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[
+    </span><span style="color:#fdf4c1;">yarn
+    nodejs-13_x
+  </span><span style="color:#fdf4c1aa;">];
+}
+</span></code></pre>
+<p>We can now use the environnement provided by those files to start our stack.</p>
+<h2 id="supervisord-manage-lifecycles">Supervisord: manage lifecycles</h2>
+<p><code>supervisord</code> is a tool that behaves like <code>systemd</code> service management: it manages some child processes and gives information about their respective states.</p>
+<p>The historical version of <code>supervisord</code> is developed in python but is bloated and have been having unresolved issues for years, thus I decided to use a re-implementation of it in Go (<a href="https://github.com/ochinchina/supervisord">repo</a>) that worked pretty well.</p>
+<p>Packaging Go Applications for Nix is really trivial, and for <code>supervisord</code> it was kind of easy. Let's create a <code>go-supervisord.nix</code> file:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">fetchFromGitHub</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">buildGoModule </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+
+</span><span style="color:#fdf4c1;">buildGoModule </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#8ec07c;">pname </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;go-supervisord&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">version </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;2020-04-29&quot;</span><span style="color:#fdf4c1aa;">;
+
+  </span><span style="color:#8ec07c;">src </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">fetchFromGitHub </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#8ec07c;">owner </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;ochinchina&quot;</span><span style="color:#fdf4c1aa;">;
+    </span><span style="color:#8ec07c;">repo </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;supervisord&quot;</span><span style="color:#fdf4c1aa;">;
+    </span><span style="color:#8ec07c;">rev </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;28a1320da59bb083b01fd0108c095cfe64e58abe&quot;</span><span style="color:#fdf4c1aa;">;
+    </span><span style="color:#8ec07c;">sha256 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;1l2rvfll2mcpr36xfhll84iqzb2ywaq6iw3v9y0a6p0cmww7zmv2&quot;</span><span style="color:#fdf4c1aa;">;
+  };
+
+  </span><span style="color:#8ec07c;">modSha256 </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;0y1wvaj9dip1irv0ryxc9s9zq7cy24s1kjqlfaha810260mwf6z9&quot;</span><span style="color:#fdf4c1aa;">;
+}
+</span></code></pre>
+<p>And let's add it to our devenv shell:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">with </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&lt;nixpkgs&gt; </span><span style="color:#fdf4c1aa;">{};
+
+</span><span style="color:#fa5c4b;">let
+  </span><span style="color:#8ec07c;">backendFolder </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;/mnt/code/backend&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">frontendFolder </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;/mnt/code/frontend&quot;</span><span style="color:#fdf4c1aa;">;
+
+  </span><span style="color:#8ec07c;">go-supervisord </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage </span><span style="color:#b8bb26;">./go-supervisord.nix </span><span style="color:#fdf4c1aa;">{};
+</span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">mkShell </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;shiba-dev-env&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">buildInputs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[ </span><span style="color:#fdf4c1;">go-supervisord </span><span style="color:#fdf4c1aa;">];
+}
+</span></code></pre>
+<p>We can now use the <code>supervisord</code> command inside our <code>nix-shell</code>!</p>
+<h3 id="configuration">Configuration</h3>
+<p><code>supervisord</code> configuration is defined by a ini-like file. It describes what processes it launches, how it monitors them etc... Quite like a <code>docker-compose.yml</code> file.</p>
+<p>We will use Nix to build this configuration file, let's create a <code>supervisord-config.nix</code>.</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#d3869b;">{ </span><span style="color:#fdf4c1;">callPackage</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">writeText</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">logsFolder</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">backendFolder</span><span style="color:#fe8019;">, </span><span style="color:#fdf4c1;">frontendFolder </span><span style="color:#d3869b;">}</span><span style="color:#fdf4c1aa;">:
+
+</span><span style="color:#fa5c4b;">let
+  </span><span style="color:#8ec07c;">backendEnv </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage backendFolder </span><span style="color:#fdf4c1aa;">{};
+  </span><span style="color:#8ec07c;">frontendEnv </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage frontendFolder </span><span style="color:#fdf4c1aa;">{};
+</span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">writeText </span><span style="color:#b8bb26;">&quot;supervisor.conf&quot; &#39;&#39;
+  [supervisord]
+  logfile = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">logsFolder</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/supervisord.log
+
+  [inet_http_server]
+  port = 127.0.0.1:9001
+
+  [program:backend]
+  command = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">backendEnv</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/bin/rails serve
+  directory = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">backendFolder</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">
+  stdout_logfile = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">logsFolder</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/backend.stdout.log
+  stderr_logfile = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">logsFolder</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/backend.stderr.log
+  stdout_logfile_maxbytes = 8000000
+  stderr_logfile_maxbytes = 8000000
+
+  [program:frontend]
+  command = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">frontendEnv</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/bin/yarn run start
+  directory = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">frontendEnv</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">
+  stdout_logfile = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">logsFolder</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/frontend.stdout.log
+  stderr_logfile = </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">logsFolder</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/frontend.stderr.log
+  stdout_logfile_maxbytes = 8000000
+  stderr_logfile_maxbytes = 8000000
+&#39;&#39;
+</span></code></pre>
+<p>When executing <code>callPackage backendFolder {};</code>, we simply call the <code>default.nix</code> file inside our project folder. It returns a store path where the binaries required by this environnement are available.</p>
+<h3 id="putting-it-all-together">Putting it all together</h3>
+<p>Let's go back to our <code>shell.nix</code> file.</p>
+<p>In this step we're going to:</p>
+<ul>
+<li>Import our configuration file.</li>
+<li>Create a helper to start the stack using <code>supervisord</code>.</li>
+<li>Create a helper to stop the stack using <code>supervisord</code>.</li>
+<li>Create a helper to call <code>supervisord</code> with the configuration easily.</li>
+</ul>
+<pre style="background-color:#282828;">
+<code><span style="color:#fa5c4b;">with </span><span style="color:#fabd2f;">import </span><span style="color:#b8bb26;">&lt;nixpkgs&gt; </span><span style="color:#fdf4c1aa;">{};
+
+</span><span style="color:#fa5c4b;">let
+  </span><span style="color:#8ec07c;">backendFolder </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;/mnt/code/backend&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">frontendFolder </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;/mnt/code/frontend&quot;</span><span style="color:#fdf4c1aa;">;
+  </span><span style="color:#8ec07c;">logsFolder </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;/mnt/code/devenv/logs&quot;</span><span style="color:#fdf4c1aa;">;
+
+  </span><span style="color:#8ec07c;">configFile </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage </span><span style="color:#b8bb26;">./supervisord-config.nix </span><span style="color:#fdf4c1aa;">{
+    </span><span style="color:#fa5c4b;">inherit </span><span style="color:#8ec07c;">backendFolder frontendFolder logsFolder</span><span style="color:#fdf4c1aa;">;
+  };
+
+  </span><span style="color:#8ec07c;">go-supervisord </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">callPackage </span><span style="color:#b8bb26;">./go-supervisord.nix </span><span style="color:#fdf4c1aa;">{};
+
+  </span><span style="color:#8ec07c;">devup </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">writeShellScriptBin </span><span style="color:#b8bb26;">&quot;devup&quot; &#39;&#39;
+    mkdir -p </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">logsFolder</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;">/logs
+    exec supervisord -d -c </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">configFile</span><span style="font-style:italic;color:#b8bb26;">}
+  </span><span style="color:#b8bb26;">&#39;&#39;</span><span style="color:#fdf4c1aa;">;
+
+  </span><span style="color:#8ec07c;">devctl </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">writeShellScriptBin </span><span style="color:#b8bb26;">&quot;devctl&quot; &#39;&#39;
+    if [ $# -eq 0 ]; then
+      exec supervisord -c </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">configFile</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;"> ctl status
+    else
+      exec supervisord -c </span><span style="font-style:italic;color:#b8bb26;">${</span><span style="color:#fdf4c1;">configFile</span><span style="font-style:italic;color:#b8bb26;">}</span><span style="color:#b8bb26;"> ctl &quot;$@&quot;
+    fi
+  &#39;&#39;</span><span style="color:#fdf4c1aa;">;
+
+  </span><span style="color:#8ec07c;">devdown </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">writeShellScriptBin </span><span style="color:#b8bb26;">&quot;devdown&quot; &#39;&#39;
+    devctl stop all
+    devctl shutdown
+  &#39;&#39;</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">mkShell </span><span style="color:#fdf4c1aa;">{
+  </span><span style="color:#8ec07c;">name </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">&quot;shiba-dev-env&quot;</span><span style="color:#fdf4c1aa;">;
+
+  </span><span style="color:#8ec07c;">buildInputs </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">[
+    </span><span style="color:#fdf4c1;">go-supervisord
+    devup
+    devctl
+    devdown
+  </span><span style="color:#fdf4c1aa;">];
+}
+</span></code></pre>
+<p>If we start our shell, now:</p>
+<pre style="background-color:#282828;">
+<code><span style="color:#fdf4c1;">ely@dev-machine /mnt/code/devenv $ nix-shell
+
+[nix-shell:/mnt/code/devenv]$ devup
+</span><span style="font-style:italic;color:#928374;"># Our dev env is up and running!
+
+</span><span style="color:#fdf4c1;">[nix-shell:/mnt/code/devenv]$ devctl
+backend                   Running   pid 1769, uptime 0:00:03
+frontend                  Running   pid 1765, uptime 0:00:03
+</span><span style="font-style:italic;color:#928374;"># We can see our service running
+
+</span><span style="color:#fdf4c1;">[nix-shell:/mnt/code/devenv]$ devctl XXX
+</span><span style="font-style:italic;color:#928374;"># devctl is passing all arguments to supervisord,
+# thus you can do things like &quot;devctl restart backend&quot;
+
+</span><span style="color:#fdf4c1;">[nix-shell:/mnt/code/devenv]$ devdown
+</span><span style="font-style:italic;color:#928374;"># Shutting down everything
+</span></code></pre><h2 id="next-steps">Next steps</h2>
+<p>Using Nix as a base for a development environnement opens a lot more possibilities (that I will cover in another post). You can add custom commands to the shell using <code>writeShellScriptBin</code>: you have a full reproducible shell you can give to your developers.</p>
+<p>Leveraging the reproducibility of Nix and the whole package set available also allows developers to get what they need to extend their work environment.</p>
+<p>It's quite known that providing an efficient way to share a common development environnement across developers is boosting productivity: today, developers in my company are enhancing the scripts in <code>shell.nix</code> to extend its features more and more. Here is an example of what they have added so far:</p>
+<ul>
+<li>Migration execution scripts</li>
+<li>Seeding scripts</li>
+<li>Common troubleshooting scripts</li>
+<li>Environment reset scripts (destroying databases, caches etc...)</li>
+</ul>
+<p>Newcomers on this stack can leverage all the work done before them, and easily start to work on the stack.</p>
+
+      </section>
+    </div>
+  </main>
+</body>
+</html>

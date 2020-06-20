@@ -13,7 +13,8 @@ plain_page = true
  - The font used is `JetBrainsMono`, created by JetBrains: [more information here](https://www.jetbrains.com/lp/mono/).
  - This blog is built with [Zola](https://getzola.org).
  - The color theme is a variation of the `gruvbox-material` theme, more details on [github](https://github.com/sainnhe/gruvbox-material).
- - All content made by me is licensed with the [unlicensed](https://unlicense.org/) license unless stated otherwise :
+ - All articles are published with the [CC-BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) licence.
+ - All code made by me is licensed with the [unlicensed](https://unlicense.org/) license unless stated otherwise :
 
 ```
 This is free and unencumbered software released into the public domain.

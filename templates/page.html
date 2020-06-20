@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ page.title }} - Elyhaka's Website</title>
+  {% include "_head_defaults.html" %}
+</head>
+<body class="page">
+  {% include "_nav_side.html" %}
+
+  <main>
+    <div class="wrapper">
+      {% include "_nav_top.html" %}
+      <section class="page-content">
+        {% if not page.extra.plain_page %}
+          <span class="italic">Posted the <span class="red bright">{{ page.date }}</span></span>
+          <h1>{{ page.title | safe }}</h1>
+        {% endif %}
+
+        {{ page.content | safe }}
+      </section>
+    </div>
+  </main>
+</body>
+</html>

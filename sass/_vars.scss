@@ -1,0 +1,76 @@
+/* COLORS */
+$bg-soft: #5c5857;
+$bg-normal: #32302f;
+$bg-hard: #282625;
+$fg: #dfbf8e;
+
+$red-dark: #ea6962;
+$red-bright: #ee8781;
+
+$green-dark: #a9b665;
+$green-bright: #bac483;
+
+$orange-dark: #e78a4e;
+$orange-bright: #eba171;
+
+$blue-dark: #7daea3;
+$blue-bright: #97beb5;
+
+$purple-dark: #d3869b;
+$purple-bright: #db9eaf;
+
+$cyan-dark: #89b482;
+$cyan-bright: #a0c39a;
+
+$gray-dark: #857a6a;
+$gray-bright: #9e9486;
+
+@mixin color-mixin($name, $normal, $bright) {
+  .#{$name} {
+    color: $normal;
+    &.bright {
+      color: $bright;
+    }
+  }
+}
+
+@include color-mixin("red", $red-dark, $red-bright);
+@include color-mixin("green", $green-dark, $green-bright);
+@include color-mixin("orange", $orange-dark, $orange-bright);
+@include color-mixin("blue", $blue-dark, $blue-bright);
+@include color-mixin("purple", $purple-dark, $purple-bright);
+@include color-mixin("cyan", $cyan-dark, $cyan-bright);
+@include color-mixin("gray", $gray-dark, $gray-bright);
+
+/* SIZES */
+
+$sidebar: 20vw;
+$sidebar-min: 200px;
+$sidebar-max: 300px;
+$sidebar-border: 3px;
+
+$wrapper: 80%;
+$wrapper-max: 800px;
+
+$breakpoint: 800px;
+
+@mixin before-breakpoint {
+  @media screen and (max-width: $breakpoint) {
+    @content
+  }
+};
+
+/* ANIMATIONS */
+
+@keyframes cursor-blinking {
+  0% { opacity: 1 }
+  50% { opacity: 0 }
+  100% { opacity: 1 }
+}
+
+@mixin cursor-blinking {
+  animation-duration: 1s;
+  animation-name: cursor-blinking;
+  animation-iteration-count: infinite;
+  -moz-animation-timing-function: ease-in-out;
+}

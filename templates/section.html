@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ section.title }} - Elyhaka's Website</title>
+  {% include "_head_defaults.html" %}
+</head>
+<body class="page">
+  {% include "_nav_side.html" %}
+  <main>
+    <div class="wrapper">
+      {% include "_nav_top.html" %}
+
+      <h1>{{ section.title }}</h1>
+
+      <ul>
+        {% for post in section.pages %}
+          <li>
+            <span class="red bright">{{ post.date }}</span> &mdash;
+            <a href="{{ post.permalink }}">{{ post.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </main>
+</body>
+</html>

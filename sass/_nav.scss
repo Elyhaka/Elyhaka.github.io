@@ -42,6 +42,36 @@ nav.side {
     font-weight: 400;
   }
 
+  .sup {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    padding-top: 20px;
+    width: 90%;
+    border-top: 1px solid $fg;
+
+    list-style: none;
+
+    li {
+      margin-bottom: 16px;
+      a {
+        color: $fg;
+        text-decoration: none;
+
+        &::before {
+          color: $gray-bright;
+          content: "->";
+        }
+  
+        &:hover {
+          background-color: $orange-bright;
+          color: $bg-normal;
+        }
+      }
+    }
+
+  }
+
   @include before-breakpoint {
     position: static;
     width: 100vw;
@@ -88,8 +118,11 @@ nav.side {
     h2 {
       display: none;
     }
-  }
 
+    .sup {
+      display: none;
+    }
+  }
 }
 
 nav.top {

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title></title>
+	<link href="https://elyhaka.github.io/atom.xml" rel="self" type="application/atom+xml"/>
+	<link href="https://elyhaka.github.io"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2020-06-20T00:00:00+00:00</updated>
+	<id>https://elyhaka.github.io/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Dynamic configuration files for the undecided ones</title>
+		<published>2020-06-20T00:00:00+00:00</published>
+		<updated>2020-06-20T00:00:00+00:00</updated>
+		<link href="https://elyhaka.github.io/posts/dynamic-config-for-undecided-ones/" type="text/html"/>
+		<id>https://elyhaka.github.io/posts/dynamic-config-for-undecided-ones/</id>
+		<content type="html">&lt;p&gt;I&#x27;m the kind of person that gets bored of its current theme quite quickly. I&#x27;m changing it very &lt;em&gt;very&lt;&#x2F;em&gt; &lt;strong&gt;&lt;em&gt;very&lt;&#x2F;em&gt;&lt;&#x2F;strong&gt; often. But I keep the same layout and workflow almost every time, and I mostly just change colors, fonts and wallpapers.&lt;&#x2F;p&gt;
+&lt;p&gt;Back when I was using ArchLinux as my main system, I had this little Ruby script I created that was populating my home directory with configuration files (for i3, urxvt etc...). I was using &lt;a href=&quot;https:&#x2F;&#x2F;ruby-doc.org&#x2F;stdlib-2.7.1&#x2F;libdoc&#x2F;erb&#x2F;rdoc&#x2F;ERB.html&quot;&gt;ERB&lt;&#x2F;a&gt; back then to make dynamic the parts that were theme related. It worked well and I used it for years.&lt;&#x2F;p&gt;
+&lt;p&gt;When I switched to NixOS, I naturally started to use my script, but it quickly seemed it was completely overlapping with what I could do with &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rycee&#x2F;home-manager&quot;&gt;home-manager&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;managing-my-desktop-theme-with-nix&quot;&gt;Managing my desktop theme with Nix&lt;&#x2F;h2&gt;
+&lt;p&gt;Yup, as stupid as it sounds, that&#x27;s what I ended up doing. And I think its the most powerful way to handle it!&lt;&#x2F;p&gt;
+&lt;p&gt;That&#x27;s quite simple using home manager&#x27;s &lt;code&gt;home.file&lt;&#x2F;code&gt; entries. I first created a &lt;code&gt;theme.nix&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;pkgs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;:
+
+{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;font &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;JetBrains Mono&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;size &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;12&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  };
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;gtk &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;theme &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;package &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;pop-gtk-theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Pop-dark&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;iconTheme &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;package &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;papirus-icon-theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Papirus-Dark&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+  };
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;colors &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;hard &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#282625&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;normal &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#32302f&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;soft &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#5c5857&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;rgba &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;rgba(30, 30, 30, &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;)&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;fg &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#dfbf8e&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;red &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#ea6962&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#ee8781&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;green &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#a9b665&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#bac483&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;yellow &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#e78a4e&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#eba171&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;blue &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#7daea3&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#97beb5&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;purple &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#d3869b&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#db9eaf&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;cyan &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#89b482&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#a0c39a&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;orange &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#dfbf8e&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#e5cba4&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;gray &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;dark &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#857a6a&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;bright &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#9e9486&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+  };
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then, I used it to customize the output of configuration files. For instance, this is how I used it to customize &lt;code&gt;alacritty&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;theme &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;:
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;h &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;builtins&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;replaceStrings &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;#&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;] [ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;0x&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;] &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;&amp;#39;
+  env:
+    TERM: xterm-256color
+  font:
+    normal:
+      family: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;font&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+    size: 14
+  cursor:
+    style: Beam
+  mouse:
+    url:
+      launcher:
+        program: firefox-devedition
+  background_opacity: 0.92
+  colors:
+    primary:
+      background: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;hard&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      foreground: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;fg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+    normal:
+      black:   &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;hard&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      red:     &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;red&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;dark&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      green:   &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;green&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;dark&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      yellow:  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;yellow&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;dark&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      blue:    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;blue&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;dark&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      magenta: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;purple&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;dark&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      cyan:    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;cyan&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;dark&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      white:   &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;gray&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;dark&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+    bright:
+      black:   &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;gray&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      red:     &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;red&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      green:   &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;green&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      yellow:  &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;yellow&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      blue:    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;blue&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      magenta: &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;purple&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      cyan:    &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;cyan&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+      white:   &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;h theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;colors&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;gray&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bright&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;
+&amp;#39;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then, in my &lt;code&gt;home.nix&lt;&#x2F;code&gt; I simply use the output of the previous file (a string) as the &lt;code&gt;text&lt;&#x2F;code&gt; of alacritty&#x27;s configuration file.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, ... &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;:
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;theme &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;.&#x2F;theme.nix &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;inherit &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  };
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;home&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;.config&#x2F;alacritty&#x2F;alacritty.yml&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;text &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;.&#x2F;alacritty.nix &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;inherit &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;theme&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    };
+  };
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I repeated this with all the programs I use, and I&#x27;m now a &lt;code&gt;home-manager switch&lt;&#x2F;code&gt; away of having my new theme perfectly applied on my whole desktop.&lt;&#x2F;p&gt;
+&lt;p&gt;That&#x27;s what I love with NixOS, I can leverage the same language to manage every little part of my operating system, even the unexpected ones.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Making a micro-service development environnement using Nix</title>
+		<published>2020-06-19T00:00:00+00:00</published>
+		<updated>2020-06-19T00:00:00+00:00</updated>
+		<link href="https://elyhaka.github.io/posts/making-microservices-devenv-with-nix/" type="text/html"/>
+		<id>https://elyhaka.github.io/posts/making-microservices-devenv-with-nix/</id>
+		<content type="html">&lt;p&gt;Nix is great when it comes to providing repeatable development environment, but when compared to the tooling provided around &lt;code&gt;docker&lt;&#x2F;code&gt; it falls short. For instance, there is no equivalent for &lt;code&gt;docker-compose&lt;&#x2F;code&gt; that gives the flexibility to handle the lifecycle of multiple  components easily, and that&#x27;s a must-have when working on micro-services projects.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-we-want&quot;&gt;What we want&lt;&#x2F;h2&gt;
+&lt;p&gt;Most projects with multiple services I&#x27;ve worked on have a &lt;code&gt;docker-compose.yml&lt;&#x2F;code&gt; and a bunch of shell scripts that handle the lifecycle of the application. That&#x27;s convenient when working on it: everything you need is always one &lt;code&gt;docker-compose&lt;&#x2F;code&gt; command away. When working with Nix environnement, I generally miss the comfort I&#x27;m used to have:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Starting all components with a single command.&lt;&#x2F;li&gt;
+&lt;li&gt;Handle the lifecycle of all components easily.&lt;&#x2F;li&gt;
+&lt;li&gt;Giving the possibility to follow logs for one service.&lt;&#x2F;li&gt;
+&lt;li&gt;Providing a simple way to execute scripts that help the developer (like executing pending database migrations locally, purging caches, etc...).&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;It turns out it is completely feasible to use Nix to provide such tooling around a project. Here&#x27;s how.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;assumptions-made-throughout-this-post&quot;&gt;Assumptions made throughout this post&lt;&#x2F;h3&gt;
+&lt;p&gt;I assume you&#x27;re familiar enough with Nix. Also, for the sake of this example, I will assume the following simple project:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;The development environnement scripts are store in the &lt;code&gt;&#x2F;mnt&#x2F;code&#x2F;devenv&lt;&#x2F;code&gt; folder.&lt;&#x2F;li&gt;
+&lt;li&gt;The Backend is made in Ruby, cloned in the &lt;code&gt;&#x2F;mnt&#x2F;code&#x2F;backend&lt;&#x2F;code&gt; folder.&lt;&#x2F;li&gt;
+&lt;li&gt;The Frontend is made with whatever-js-framework managed by &lt;code&gt;yarn&lt;&#x2F;code&gt;, cloned in the &lt;code&gt;&#x2F;mnt&#x2F;code&#x2F;frontend&lt;&#x2F;code&gt; folder.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;strong&gt;Disclaimer&lt;&#x2F;strong&gt;: This is not really a micro-service setup, but adding more elements on this stack would not change the process, thus I&#x27;m limiting it to a traditional backend-frontend architecture.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-nix-shell-tool&quot;&gt;The nix-shell tool&lt;&#x2F;h2&gt;
+&lt;p&gt;Nix comes with &lt;a href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;nixos&#x2F;nix-pills&#x2F;developing-with-nix-shell.html&quot;&gt;nix-shell&lt;&#x2F;a&gt;, a tool that spawns a shell with a specific environment. You can declare it in a &lt;code&gt;shell.nix&lt;&#x2F;code&gt; file. For instance, when working on this website, I use the following &lt;code&gt;shell.nix&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;lt;nixpkgs&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;mkShell &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;buildInputs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;zola &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;]; }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then I simply run &lt;code&gt;nix-shell --run &#x27;zola serve&#x27;&lt;&#x2F;code&gt; in the folder to get the Zola server up and running. I can also run &lt;code&gt;nix-shell&lt;&#x2F;code&gt; without any arguments to get a bash shell in the context of the declared &lt;code&gt;mkShell&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s start with our development environnement with a basic &lt;code&gt;shell.nix&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;lt;nixpkgs&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;backendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;code&#x2F;backend&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;frontendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;code&#x2F;frontend&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;mkShell &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;shiba-dev-env&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;buildInputs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;[];
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Right now our shell is pretty useless, but we will start to add elements soon.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;nixify-projects&quot;&gt;Nixify projects&lt;&#x2F;h2&gt;
+&lt;p&gt;On the backend and the frontend, we will need some Nix file to provide the environnement we will use to run them.&lt;&#x2F;p&gt;
+&lt;p&gt;On the backend folder, we would create a &lt;code&gt;default.nix&lt;&#x2F;code&gt; with the following content:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bundlerEnv&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;ruby_2_7 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;:
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;bundlerEnv &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;ruby-env&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;ruby &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;ruby_2_7&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;gemdir &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;.&#x2F;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;(You can find more information a developing&#x2F;packaging Ruby applications for nix &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;NixOS&#x2F;nixpkgs&#x2F;blob&#x2F;master&#x2F;doc&#x2F;languages-frameworks&#x2F;ruby.section.md&quot;&gt;here&lt;&#x2F;a&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;For the frontend, we would also create a &lt;code&gt;default.nix&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;symlinkJoin&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;yarn&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;nodejs-13_x &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;:
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;symlinkJoin &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;yarn-webapp&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;paths &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;[
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;yarn
+    nodejs-13_x
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;];
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We can now use the environnement provided by those files to start our stack.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;supervisord-manage-lifecycles&quot;&gt;Supervisord: manage lifecycles&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;supervisord&lt;&#x2F;code&gt; is a tool that behaves like &lt;code&gt;systemd&lt;&#x2F;code&gt; service management: it manages some child processes and gives information about their respective states.&lt;&#x2F;p&gt;
+&lt;p&gt;The historical version of &lt;code&gt;supervisord&lt;&#x2F;code&gt; is developed in python but is bloated and have been having unresolved issues for years, thus I decided to use a re-implementation of it in Go (&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ochinchina&#x2F;supervisord&quot;&gt;repo&lt;&#x2F;a&gt;) that worked pretty well.&lt;&#x2F;p&gt;
+&lt;p&gt;Packaging Go Applications for Nix is really trivial, and for &lt;code&gt;supervisord&lt;&#x2F;code&gt; it was kind of easy. Let&#x27;s create a &lt;code&gt;go-supervisord.nix&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;fetchFromGitHub&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;buildGoModule &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;:
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;buildGoModule &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;pname &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;go-supervisord&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;2020-04-29&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;src &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;fetchFromGitHub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;owner &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;ochinchina&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;repo &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;supervisord&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;rev &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;28a1320da59bb083b01fd0108c095cfe64e58abe&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;sha256 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;1l2rvfll2mcpr36xfhll84iqzb2ywaq6iw3v9y0a6p0cmww7zmv2&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  };
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;modSha256 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;0y1wvaj9dip1irv0ryxc9s9zq7cy24s1kjqlfaha810260mwf6z9&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And let&#x27;s add it to our devenv shell:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;lt;nixpkgs&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;backendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;code&#x2F;backend&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;frontendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;code&#x2F;frontend&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;go-supervisord &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;callPackage &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;.&#x2F;go-supervisord.nix &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;mkShell &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;shiba-dev-env&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;buildInputs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;[ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;go-supervisord &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;];
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We can now use the &lt;code&gt;supervisord&lt;&#x2F;code&gt; command inside our &lt;code&gt;nix-shell&lt;&#x2F;code&gt;!&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;configuration&quot;&gt;Configuration&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;supervisord&lt;&#x2F;code&gt; configuration is defined by a ini-like file. It describes what processes it launches, how it monitors them etc... Quite like a &lt;code&gt;docker-compose.yml&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;p&gt;We will use Nix to build this configuration file, let&#x27;s create a &lt;code&gt;supervisord-config.nix&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;callPackage&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;writeText&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;backendFolder&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;frontendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;:
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;backendEnv &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;callPackage backendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;frontendEnv &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;callPackage frontendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;writeText &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;supervisor.conf&amp;quot; &amp;#39;&amp;#39;
+  [supervisord]
+  logfile = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;supervisord.log
+
+  [inet_http_server]
+  port = 127.0.0.1:9001
+
+  [program:backend]
+  command = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;backendEnv&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;bin&#x2F;rails serve
+  directory = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;backendFolder&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;
+  stdout_logfile = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;backend.stdout.log
+  stderr_logfile = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;backend.stderr.log
+  stdout_logfile_maxbytes = 8000000
+  stderr_logfile_maxbytes = 8000000
+
+  [program:frontend]
+  command = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;frontendEnv&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;bin&#x2F;yarn run start
+  directory = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;frontendEnv&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;
+  stdout_logfile = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;frontend.stdout.log
+  stderr_logfile = &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;frontend.stderr.log
+  stdout_logfile_maxbytes = 8000000
+  stderr_logfile_maxbytes = 8000000
+&amp;#39;&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;When executing &lt;code&gt;callPackage backendFolder {};&lt;&#x2F;code&gt;, we simply call the &lt;code&gt;default.nix&lt;&#x2F;code&gt; file inside our project folder. It returns a store path where the binaries required by this environnement are available.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;putting-it-all-together&quot;&gt;Putting it all together&lt;&#x2F;h3&gt;
+&lt;p&gt;Let&#x27;s go back to our &lt;code&gt;shell.nix&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;p&gt;In this step we&#x27;re going to:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Import our configuration file.&lt;&#x2F;li&gt;
+&lt;li&gt;Create a helper to start the stack using &lt;code&gt;supervisord&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;Create a helper to stop the stack using &lt;code&gt;supervisord&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;Create a helper to call &lt;code&gt;supervisord&lt;&#x2F;code&gt; with the configuration easily.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;lt;nixpkgs&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;let
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;backendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;code&#x2F;backend&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;frontendFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;code&#x2F;frontend&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;logsFolder &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&#x2F;mnt&#x2F;code&#x2F;devenv&#x2F;logs&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;configFile &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;callPackage &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;.&#x2F;supervisord-config.nix &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;inherit &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;backendFolder frontendFolder logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+  };
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;go-supervisord &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;callPackage &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;.&#x2F;go-supervisord.nix &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{};
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;devup &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;writeShellScriptBin &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;devup&amp;quot; &amp;#39;&amp;#39;
+    mkdir -p &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;logsFolder&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&#x2F;logs
+    exec supervisord -d -c &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;configFile&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;devctl &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;writeShellScriptBin &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;devctl&amp;quot; &amp;#39;&amp;#39;
+    if [ $# -eq 0 ]; then
+      exec supervisord -c &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;configFile&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt; ctl status
+    else
+      exec supervisord -c &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;configFile&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#b8bb26;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt; ctl &amp;quot;$@&amp;quot;
+    fi
+  &amp;#39;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;devdown &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;writeShellScriptBin &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;devdown&amp;quot; &amp;#39;&amp;#39;
+    devctl stop all
+    devctl shutdown
+  &amp;#39;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;mkShell &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;{
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;shiba-dev-env&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;;
+
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;buildInputs &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;[
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;go-supervisord
+    devup
+    devctl
+    devdown
+  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1aa;&quot;&gt;];
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If we start our shell, now:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;&quot;&gt;
+&lt;code&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;ely@dev-machine &#x2F;mnt&#x2F;code&#x2F;devenv $ nix-shell
+
+[nix-shell:&#x2F;mnt&#x2F;code&#x2F;devenv]$ devup
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Our dev env is up and running!
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[nix-shell:&#x2F;mnt&#x2F;code&#x2F;devenv]$ devctl
+backend                   Running   pid 1769, uptime 0:00:03
+frontend                  Running   pid 1765, uptime 0:00:03
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# We can see our service running
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[nix-shell:&#x2F;mnt&#x2F;code&#x2F;devenv]$ devctl XXX
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# devctl is passing all arguments to supervisord,
+# thus you can do things like &amp;quot;devctl restart backend&amp;quot;
+
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[nix-shell:&#x2F;mnt&#x2F;code&#x2F;devenv]$ devdown
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Shutting down everything
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;h2 id=&quot;next-steps&quot;&gt;Next steps&lt;&#x2F;h2&gt;
+&lt;p&gt;Using Nix as a base for a development environnement opens a lot more possibilities (that I will cover in another post). You can add custom commands to the shell using &lt;code&gt;writeShellScriptBin&lt;&#x2F;code&gt;: you have a full reproducible shell you can give to your developers.&lt;&#x2F;p&gt;
+&lt;p&gt;Leveraging the reproducibility of Nix and the whole package set available also allows developers to get what they need to extend their work environment.&lt;&#x2F;p&gt;
+&lt;p&gt;It&#x27;s quite known that providing an efficient way to share a common development environnement across developers is boosting productivity: today, developers in my company are enhancing the scripts in &lt;code&gt;shell.nix&lt;&#x2F;code&gt; to extend its features more and more. Here is an example of what they have added so far:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Migration execution scripts&lt;&#x2F;li&gt;
+&lt;li&gt;Seeding scripts&lt;&#x2F;li&gt;
+&lt;li&gt;Common troubleshooting scripts&lt;&#x2F;li&gt;
+&lt;li&gt;Environment reset scripts (destroying databases, caches etc...)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Newcomers on this stack can leverage all the work done before them, and easily start to work on the stack.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>

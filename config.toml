@@ -1,3 +1,4 @@
+title = "Elyhaka's Website"
 base_url = "https://elyhaka.github.io"
 compile_sass = true
 highlight_code = true
